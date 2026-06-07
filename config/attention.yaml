@@ -1,0 +1,67 @@
+# CLS pooling, mean pooling, attention pooling, gated fusion, conditional attention, cascaded attention.
+schema_version: 1
+
+attention_variants:
+  cls_pooling:
+    description: Use the first token representation.
+    type: cls
+    sequence_scope: text_pair
+
+  mean_pooling:
+    description: Mean pooling over non-padding tokens.
+    type: mean
+    mask_padding: true
+    sequence_scope: text_pair
+
+  attention_pooling:
+    description: Learn scalar attention weights over sequence states.
+    type: attention_pooling
+    sequence_scope: text_pair
+    hidden_size: 256
+    dropout: 0.1
+
+  cls_attention_gated_fusion:
+    description: Fuse CLS and attention pooling with a learned gate.
+    type: gated_fusion
+    sources:
+      - cls
+      - attention_pooling
+    gate:
+      input: concat
+      activation: sigmoid
+
+  target_conditioned_attention:
+    description: Attention query is computed from target representation.
+    type: conditional_attention
+    target_required: true
+    target_representation: second_sequence_pooling
+    query_source: target
+    key_source: sentence_tokens
+    value_source: sentence_tokens
+    hidden_size: 256
+
+  aspect_conditioned_attention:
+    description: Attention query is computed from predicted aspect embedding during inference or gold aspect embedding during training.
+    type: conditional_attention
+    target_required: true
+    aspect_source: predicted_or_gold
+    query_source: aspect_embedding
+    key_source: sentence_tokens
+    value_source: sentence_tokens
+    hidden_size: 256
+
+  cascaded_attention:
+    description: First attend for aspect, then use aspect context to attend for sentiment.
+    type: cascaded_attention
+    target_required: true
+    stages:
+      - name: aspect_attention
+        query_source: target
+      - name: sentiment_attention
+        query_source: aspect_context
+
+  multihead_pooling:
+    description: Multi-head self-attention pooling before classification heads.
+    type: multihead_attention_pooling
+    num_heads: 8
+    dropout: 0.1

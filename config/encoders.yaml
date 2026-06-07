@@ -1,0 +1,50 @@
+# PhoBERT base/large, XLM-R base/large, ViDeBERTa xsmall. So sánh hiệu quả của các encoder này trên bài toán ABSA.
+schema_version: 1
+
+encoders:
+  phobert_base:
+    provider: huggingface
+    model_name: vinai/phobert-base
+    tokenizer_name: vinai/phobert-base
+    tokenizer_type: auto
+    requires_word_segmentation: true
+    hidden_size: auto
+
+  phobert_large:
+    provider: huggingface
+    model_name: vinai/phobert-large
+    tokenizer_name: vinai/phobert-large
+    tokenizer_type: auto
+    requires_word_segmentation: true
+    hidden_size: auto
+
+  xlm_roberta_base:
+    provider: huggingface
+    model_name: xlm-roberta-base
+    tokenizer_name: xlm-roberta-base
+    tokenizer_type: auto
+    requires_word_segmentation: false
+    hidden_size: auto
+
+  xlm_roberta_large:
+    provider: huggingface
+    model_name: xlm-roberta-large
+    tokenizer_name: xlm-roberta-large
+    tokenizer_type: auto
+    requires_word_segmentation: false
+    hidden_size: auto
+
+  vi_deberta_xsmall:
+    provider: huggingface
+    model_name: FPTAI/velectra-base-discriminator-cased
+    tokenizer_name: FPTAI/velectra-base-discriminator-cased
+    tokenizer_type: auto
+    requires_word_segmentation: false
+    hidden_size: auto
+
+encoder_training:
+  freeze_encoder: false
+  freeze_layers: 0
+  layerwise_lr_decay:
+    enabled: false
+    decay_rate: 0.95

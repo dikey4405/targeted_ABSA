@@ -1,0 +1,88 @@
+# các cách biểu diễn output như joint label, aspect/sentiment multitask, vector 3 phần tử, vector 4 phần tử.
+schema_version: 1
+
+label_structures:
+  joint_label:
+    description: Predict the full label as one class, such as SERVICE#GENERAL#POSITIVE.
+    compatible_sample_unit: annotation
+    output_mode: single_head
+    heads:
+      joint_label:
+        target: label
+        activation: softmax
+        loss_input: label_id
+
+  multitask_aspect_sentiment:
+    description: Predict aspect and sentiment with two heads.
+    compatible_sample_unit: annotation
+    output_mode: multitask
+    heads:
+      aspect:
+        target: aspect
+        activation: softmax
+        loss_input: aspect_id
+      sentiment:
+        target: sentiment
+        activation: softmax
+        loss_input: sentiment_id
+
+  multitask_with_joint_aux:
+    description: Predict aspect, sentiment, and full joint label as an auxiliary task.
+    compatible_sample_unit: annotation
+    output_mode: multitask
+    heads:
+      aspect:
+        target: aspect
+        activation: softmax
+        loss_input: aspect_id
+      sentiment:
+        target: sentiment
+        activation: softmax
+        loss_input: sentiment_id
+      joint_label:
+        target: label
+        activation: softmax
+        loss_input: label_id
+
+  aspect_sentiment_vector_3:
+    description: For each target span, predict a 3-way sentiment vector [negative, neutral, positive] for each aspect.
+    compatible_sample_unit: target_group
+    grouping_keys: [id, start, end, target]
+    output_mode: aspect_grid
+    absent_label_policy: ignore
+    sentiment_slots:
+      - negative
+      - neutral
+      - positive
+    none_slot: false
+    target_shape: [num_aspects, 3]
+    activation: sigmoid
+
+  aspect_sentiment_vector_4:
+    description: For each target span, predict [none, negative, neutral, positive] for each aspect.
+    compatible_sample_unit: target_group
+    grouping_keys: [id, start, end, target]
+    output_mode: aspect_grid
+    absent_label_policy: none
+    sentiment_slots:
+      - none
+      - negative
+      - neutral
+      - positive
+    none_slot: true
+    target_shape: [num_aspects, 4]
+    activation: sigmoid
+
+  aspect_binary_plus_sentiment:
+    description: For each target span, predict aspect existence and sentiment separately.
+    compatible_sample_unit: target_group
+    grouping_keys: [id, start, end, target]
+    output_mode: multitask
+    heads:
+      aspect_binary:
+        target: aspect_multihot
+        activation: sigmoid
+      sentiment:
+        target: sentiment
+        activation: softmax
+        condition_on_aspect: true

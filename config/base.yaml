@@ -1,0 +1,81 @@
+# cấu hình data, training, model mặc định, multitask heads.
+schema_version: 1
+project:
+  name: absa_targeted_multitask
+  task: targeted_absa
+  description: Multi-task learning for aspect and sentiment prediction.
+
+paths:
+  train_file: ABSA_targeted/Data/train.jsonl
+  dev_file: ABSA_targeted/Data/dev.jsonl
+  test_file: ABSA_targeted/Data/test.jsonl
+  output_dir: ABSA_targeted/outputs
+  checkpoint_dir: ABSA_targeted/outputs/checkpoints
+  log_dir: ABSA_targeted/outputs/logs
+
+data:
+  text_field: data
+  annotation_field: label
+  annotation_format: [start, end, label]
+  sample_unit: annotation
+  target_fields: [start, end]
+  input_format: text_pair
+  pair_order: [sentence, target]
+  target_representation: span_text
+  lowercase_labels: false
+  normalize_labels: true
+  skip_empty_targets: true
+  max_length: 256
+  train_batch_size: 16
+  eval_batch_size: 32
+  num_workers: 0
+
+training:
+  seed: 42
+  epochs: 10
+  optimizer: adamw
+  learning_rate: 2.0e-5
+  encoder_learning_rate: 2.0e-5
+  head_learning_rate: 1.0e-4
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  max_grad_norm: 1.0
+  gradient_accumulation_steps: 1
+  mixed_precision: true
+  early_stopping:
+    enabled: true
+    monitor: dev_macro_f1
+    mode: max
+    patience: 3
+
+model:
+  architecture: multitask_transformer
+  encoder_key: phobert_base
+  label_structure_key: multitask_aspect_sentiment
+  attention_key: cls_pooling
+  loss_key: multitask_ce
+  dropout: 0.2
+  hidden_dropout: 0.2
+  classifier_hidden_size: 256
+
+heads:
+  aspect:
+    enabled: true
+    type: single_label
+  sentiment:
+    enabled: true
+    type: single_label
+  joint_label:
+    enabled: false
+    type: single_label
+
+metrics:
+  primary: macro_f1
+  unit: target_annotation
+  report:
+    - accuracy
+    - macro_f1
+    - weighted_f1
+    - aspect_macro_f1
+    - sentiment_macro_f1
+    - joint_macro_f1

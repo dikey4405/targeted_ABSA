@@ -1,0 +1,95 @@
+# multitask CE, weighted CE, focal loss, uncertainty-weighted loss, gated loss, joint auxiliary loss, grid BCE/focal.
+schema_version: 1
+
+losses:
+  joint_ce:
+    description: Cross entropy for one full-label classification head.
+    type: single
+    component:
+      joint_label:
+        loss: cross_entropy
+
+  multitask_ce:
+    description: Cross entropy for aspect and sentiment.
+    type: weighted_sum
+    components:
+      aspect:
+        loss: cross_entropy
+        weight: 1.0
+      sentiment:
+        loss: cross_entropy
+        weight: 1.0
+
+  multitask_weighted_ce:
+    description: Class-weighted CE for imbalanced labels.
+    type: weighted_sum
+    class_weighting: inverse_frequency
+    components:
+      aspect:
+        loss: cross_entropy
+        weight: 1.0
+      sentiment:
+        loss: cross_entropy
+        weight: 1.0
+
+  focal_multitask:
+    description: Focal loss for hard and imbalanced examples.
+    type: weighted_sum
+    components:
+      aspect:
+        loss: focal
+        gamma: 2.0
+        alpha: auto
+        weight: 1.0
+      sentiment:
+        loss: focal
+        gamma: 2.0
+        alpha: auto
+        weight: 1.0
+
+  uncertainty_weighted_multitask:
+    description: Learn task weights with homoscedastic uncertainty.
+    type: uncertainty_weighted
+    components:
+      aspect:
+        loss: cross_entropy
+      sentiment:
+        loss: cross_entropy
+
+  gated_loss:
+    description: Sentiment loss is gated by aspect confidence.
+    type: gated
+    gate_source: aspect_probability
+    gate_target: sentiment
+    components:
+      aspect:
+        loss: cross_entropy
+        weight: 1.0
+      sentiment:
+        loss: cross_entropy
+        weight: 1.0
+
+  joint_aux_loss:
+    description: Aspect and sentiment losses with auxiliary full-label loss.
+    type: weighted_sum
+    components:
+      aspect:
+        loss: cross_entropy
+        weight: 1.0
+      sentiment:
+        loss: cross_entropy
+        weight: 1.0
+      joint_label:
+        loss: cross_entropy
+        weight: 0.5
+
+  grid_bce:
+    description: BCE loss for aspect-sentiment grid output.
+    type: binary_cross_entropy_with_logits
+    positive_weighting: inverse_frequency
+
+  grid_focal:
+    description: Focal BCE for aspect-sentiment grid output.
+    type: sigmoid_focal
+    gamma: 2.0
+    alpha: auto

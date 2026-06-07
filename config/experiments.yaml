@@ -1,0 +1,121 @@
+# gom các nhóm thí nghiệm để so sánh encoder, label structure, loss, attention.
+schema_version: 1
+
+defaults:
+  base: ABSA_targeted/config/base.yaml
+  encoders: ABSA_targeted/config/encoders.yaml
+  label_structures: ABSA_targeted/config/label_structures.yaml
+  attention: ABSA_targeted/config/attention.yaml
+  losses: ABSA_targeted/config/losses.yaml
+
+experiment_groups:
+  encoder_comparison:
+    description: Compare pretrained feature extractors with the same model head.
+    runs:
+      - name: enc_phobert_base
+        encoder_key: phobert_base
+        label_structure_key: multitask_aspect_sentiment
+        attention_key: cls_pooling
+        loss_key: multitask_ce
+      - name: enc_phobert_large
+        encoder_key: phobert_large
+        label_structure_key: multitask_aspect_sentiment
+        attention_key: cls_pooling
+        loss_key: multitask_ce
+      - name: enc_xlm_roberta_base
+        encoder_key: xlm_roberta_base
+        label_structure_key: multitask_aspect_sentiment
+        attention_key: cls_pooling
+        loss_key: multitask_ce
+      - name: enc_xlm_roberta_large
+        encoder_key: xlm_roberta_large
+        label_structure_key: multitask_aspect_sentiment
+        attention_key: cls_pooling
+        loss_key: multitask_ce
+
+  label_structure_comparison:
+    description: Compare output label representations.
+    runs:
+      - name: label_joint
+        label_structure_key: joint_label
+        attention_key: cls_pooling
+        loss_key: joint_ce
+        sample_unit: annotation
+      - name: label_multitask
+        label_structure_key: multitask_aspect_sentiment
+        attention_key: cls_pooling
+        loss_key: multitask_ce
+        sample_unit: annotation
+      - name: label_multitask_joint_aux
+        label_structure_key: multitask_with_joint_aux
+        attention_key: cls_pooling
+        loss_key: joint_aux_loss
+        sample_unit: annotation
+      - name: label_grid_3
+        label_structure_key: aspect_sentiment_vector_3
+        attention_key: cls_pooling
+        loss_key: grid_bce
+        sample_unit: target_group
+      - name: label_grid_4
+        label_structure_key: aspect_sentiment_vector_4
+        attention_key: cls_pooling
+        loss_key: grid_focal
+        sample_unit: target_group
+
+  loss_comparison:
+    description: Compare loss functions for multitask aspect and sentiment learning.
+    runs:
+      - name: loss_multitask_ce
+        label_structure_key: multitask_aspect_sentiment
+        attention_key: cls_pooling
+        loss_key: multitask_ce
+      - name: loss_weighted_ce
+        label_structure_key: multitask_aspect_sentiment
+        attention_key: cls_pooling
+        loss_key: multitask_weighted_ce
+      - name: loss_focal
+        label_structure_key: multitask_aspect_sentiment
+        attention_key: cls_pooling
+        loss_key: focal_multitask
+      - name: loss_uncertainty
+        label_structure_key: multitask_aspect_sentiment
+        attention_key: cls_pooling
+        loss_key: uncertainty_weighted_multitask
+      - name: loss_gated
+        label_structure_key: multitask_aspect_sentiment
+        attention_key: cls_pooling
+        loss_key: gated_loss
+
+  attention_comparison:
+    description: Compare pooling and attention variants.
+    runs:
+      - name: attn_cls
+        attention_key: cls_pooling
+        label_structure_key: multitask_aspect_sentiment
+        loss_key: multitask_ce
+      - name: attn_mean
+        attention_key: mean_pooling
+        label_structure_key: multitask_aspect_sentiment
+        loss_key: multitask_ce
+      - name: attn_pooling
+        attention_key: attention_pooling
+        label_structure_key: multitask_aspect_sentiment
+        loss_key: multitask_ce
+      - name: attn_gated_cls_pooling
+        attention_key: cls_attention_gated_fusion
+        label_structure_key: multitask_aspect_sentiment
+        loss_key: multitask_ce
+      - name: attn_target_conditioned
+        attention_key: target_conditioned_attention
+        label_structure_key: multitask_aspect_sentiment
+        loss_key: multitask_ce
+      - name: attn_cascaded
+        attention_key: cascaded_attention
+        label_structure_key: multitask_aspect_sentiment
+        loss_key: multitask_ce
+
+recommended_first_runs:
+  - enc_phobert_base
+  - label_multitask
+  - loss_weighted_ce
+  - attn_target_conditioned
