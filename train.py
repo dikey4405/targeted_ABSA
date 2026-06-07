@@ -163,7 +163,7 @@ class ABSATrainer:
                 best_f1 = avg_macro_f1
                 save_path = os.path.join(self.save_dir, "best_model.pt")
                 torch.save(self.model.state_dict(), save_path)
-                print(f"✅ Đã lưu model tốt nhất (F1: {best_f1:.4f}) tại {save_path}\n")
+                print(f"Đã lưu model tốt nhất (F1: {best_f1:.4f}) tại {save_path}\n")
 
 # ==========================================
 # HÀM MAIN CHẠY CHƯƠNG TRÌNH
@@ -171,8 +171,8 @@ class ABSATrainer:
 def main():
     # 1. Khai báo các đường dẫn và thiết lập
     MODEL_NAME = "vinai/phobert-base"
-    TRAIN_DATA = "D:\\Python\\ABSA_targeted\\Data\\train.jsonl"
-    VAL_DATA = "D:\\Python\\ABSA_targeted\\Data\\dev.jsonl"
+    TRAIN_DATA = "Data/train.jsonl"
+    VAL_DATA = "DATA/dev.jsonl"
     BATCH_SIZE = 16
     MAX_LENGTH = 128
     EPOCHS = 10
