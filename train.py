@@ -192,7 +192,7 @@ def main():
     val_loader = build_dataloader(VAL_DATA, vocab, BATCH_SIZE, MAX_LENGTH, shuffle=False)
 
     # 1. ĐỌC FILE YAML
-    config_path = "experiments.yaml" # Thay bằng đường dẫn file yaml của bạn
+    config_path = "config/experiments.yaml" # Thay bằng đường dẫn file yaml của bạn
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Không tìm thấy file {config_path}")
         
