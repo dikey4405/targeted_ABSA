@@ -176,8 +176,8 @@ class ABSATrainer:
 # ==========================================
 def main():
     # Cấu hình cứng
-    TRAIN_DATA = "clean_train.jsonl"
-    VAL_DATA = "clean_dev.jsonl"
+    TRAIN_DATA = "Data/train.jsonl"
+    VAL_DATA = "Data/dev.jsonl"
     BATCH_SIZE = 16
     MAX_LENGTH = 128
     EPOCHS = 10
