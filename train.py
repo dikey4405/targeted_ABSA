@@ -180,7 +180,7 @@ def main():
     VAL_DATA = "Data/dev.jsonl"
     BATCH_SIZE = 16
     MAX_LENGTH = 128
-    EPOCHS = 10
+    EPOCHS = 15
     DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     print(f"Thiết bị: {DEVICE}")
