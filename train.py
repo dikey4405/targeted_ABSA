@@ -172,7 +172,7 @@ def main():
     # 1. Khai báo các đường dẫn và thiết lập
     MODEL_NAME = "vinai/phobert-base"
     TRAIN_DATA = "Data/train.jsonl"
-    VAL_DATA = "DATA/dev.jsonl"
+    VAL_DATA = "Data/dev.jsonl"
     BATCH_SIZE = 16
     MAX_LENGTH = 128
     EPOCHS = 10
