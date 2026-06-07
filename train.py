@@ -11,6 +11,7 @@ from vocabulary import Vocabulary
 from dataloader import ABSATargetedDataset, build_dataloader
 from model.targeted_absa import TargetedABSAModel
 
+import transformers
 transformers.logging.set_verbosity_error()
 
 class ABSATrainer:
