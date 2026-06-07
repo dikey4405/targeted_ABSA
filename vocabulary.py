@@ -192,7 +192,7 @@ class Vocabulary:
         inputs = self.tokenizer(
             text,
             padding="max_length",       
-            truncation=True,            
+            truncation="only_first",            
             max_length=max_length,
             return_tensors="pt"         
         )
