@@ -166,7 +166,8 @@ class TargetedABSAModel(nn.Module):
                 target_vec = self.masked_mean_pooling(hidden_states, target_mask)
 
             sent_mask = sentence_mask if sentence_mask is not None else attention_mask
-            return self.cond_attn(hidden_states, target_vec, sent_mask)
+            target_context = self.cond_attn(hidden_states, target_vec, sent_mask)
+            return self.gated_fusion(cls_vec, target_context)
 
         if self.attention_key == "aspect_conditioned_attention":
             if aspect_ids is None:
@@ -190,7 +191,7 @@ class TargetedABSAModel(nn.Module):
             sent_mask = sentence_mask if sentence_mask is not None else attention_mask
             aspect_context = self.cond_attn(hidden_states, target_vec, sent_mask)
             sentiment_context = self.cond_attn(hidden_states, aspect_context, sent_mask)
-            return sentiment_context
+            return self.gated_fusion(cls_vec, sentiment_context)
 
         raise ValueError(f"Unsupported attention_key: {self.attention_key}")
 

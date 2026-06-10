@@ -210,7 +210,37 @@ class Vocabulary:
             max_length=max_length,
             return_tensors="pt"
         )
-        return {k: v.squeeze(0) for k, v in inputs.items()}
+        encoded = {k: v.squeeze(0) for k, v in inputs.items()}
+        encoded["target_mask"] = self._build_target_mask(encoded["input_ids"], target)
+        return encoded
+
+    def _build_target_mask(self, input_ids: torch.Tensor, target: str) -> torch.Tensor:
+        """
+        Đánh dấu các token của target trong input pair.
+        Cách này không phụ thuộc token_type_ids, nên dùng được cho PhoBERT/XLM-R.
+        """
+        target_ids = self.tokenizer(
+            target,
+            add_special_tokens=False,
+            return_tensors="pt"
+        )["input_ids"].squeeze(0)
+
+        mask = torch.zeros_like(input_ids, dtype=torch.long)
+        if target_ids.numel() == 0 or target_ids.numel() > input_ids.numel():
+            return mask
+
+        input_list = input_ids.tolist()
+        target_list = target_ids.tolist()
+        target_len = len(target_list)
+
+        # Với text pair, target thường nằm ở nửa sau chuỗi; tìm từ cuối để tránh
+        # trùng với cùng cụm từ xuất hiện trong sentence.
+        for start in range(len(input_list) - target_len, -1, -1):
+            if input_list[start:start + target_len] == target_list:
+                mask[start:start + target_len] = 1
+                break
+
+        return mask
 
     @property
     def num_labels(self) -> int:

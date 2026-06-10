@@ -47,7 +47,8 @@ class ABSATrainer:
         val_loader: DataLoader,
         device: torch.device,
         loss_key: str,
-        lr: float = 2e-5,
+        lr: float = 1e-5,
+        head_lr: float = 1e-4,
         epochs: int = 5,
         weight_decay: float = 0.01,
         save_dir: str = "checkpoints"
@@ -64,11 +65,34 @@ class ABSATrainer:
             os.makedirs(save_dir)
 
         no_decay = ['bias', 'LayerNorm.weight']
+        encoder_params = []
+        encoder_no_decay_params = []
+        head_params = []
+        head_no_decay_params = []
+
+        for name, param in model.named_parameters():
+            if not param.requires_grad:
+                continue
+
+            is_no_decay = any(nd in name for nd in no_decay)
+            is_encoder = name.startswith("encoder.")
+
+            if is_encoder and is_no_decay:
+                encoder_no_decay_params.append(param)
+            elif is_encoder:
+                encoder_params.append(param)
+            elif is_no_decay:
+                head_no_decay_params.append(param)
+            else:
+                head_params.append(param)
+
         optimizer_grouped_parameters = [
-            {'params': [p for n, p in model.named_parameters() if not any(nd in n for nd in no_decay)], 'weight_decay': weight_decay},
-            {'params': [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
+            {'params': encoder_params, 'weight_decay': weight_decay, 'lr': lr},
+            {'params': encoder_no_decay_params, 'weight_decay': 0.0, 'lr': lr},
+            {'params': head_params, 'weight_decay': weight_decay, 'lr': head_lr},
+            {'params': head_no_decay_params, 'weight_decay': 0.0, 'lr': head_lr},
         ]
-        self.optimizer = AdamW(optimizer_grouped_parameters, lr=lr)
+        self.optimizer = AdamW(optimizer_grouped_parameters)
 
         total_steps = len(train_loader) * epochs
         warmup_steps = int(0.1 * total_steps)
@@ -336,7 +360,7 @@ def main():
             if 'trainer' in locals(): del trainer
             if torch.cuda.is_available(): torch.cuda.empty_cache()
 
-    print("\n ĐÃ HOÀN THÀNH TOÀN BỘ CÁC THÍ NGHIỆM TRONG CONFIG!")
+    print("\n🎉 ĐÃ HOÀN THÀNH TOÀN BỘ CÁC THÍ NGHIỆM TRONG CONFIG!")
 
 if __name__ == "__main__":
     main()
