@@ -22,19 +22,38 @@ transformers.logging.set_verbosity_error()
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 WORKSPACE_ROOT = PROJECT_ROOT.parent
+PROJECT_NAME = PROJECT_ROOT.name
 
 
 def resolve_path(path: str) -> Path:
     raw = Path(path)
+    if raw.is_absolute():
+        return raw.resolve()
+
+    project_relative = None
+    if raw.parts and raw.parts[0] == PROJECT_NAME:
+        project_relative = PROJECT_ROOT.joinpath(*raw.parts[1:])
+
     candidates = [
-        raw,
+        Path.cwd() / raw,
+        project_relative,
         PROJECT_ROOT / raw,
         WORKSPACE_ROOT / raw,
     ]
     for candidate in candidates:
-        if candidate.exists():
+        if candidate is not None and candidate.exists():
             return candidate.resolve()
-    return (WORKSPACE_ROOT / raw).resolve()
+
+    if project_relative is not None:
+        return project_relative.resolve()
+    return (PROJECT_ROOT / raw).resolve()
+
+
+def get_env_path(name: str, default: Path) -> Path:
+    value = os.environ.get(name)
+    if value:
+        return Path(value).expanduser().resolve()
+    return default.resolve()
 
 
 def load_yaml(path: Path) -> Dict:
@@ -258,14 +277,24 @@ class ABSATrainer:
 
 
 def main():
-    experiments_path = "config/experiments.yaml"
+    experiments_path = get_env_path("ABSA_CONFIG", PROJECT_ROOT / "config" / "experiments.yaml")
     experiments_cfg = load_yaml(experiments_path)
     base_cfg = load_yaml(resolve_path(experiments_cfg["defaults"]["base"]))
     encoders_cfg = load_yaml(resolve_path(experiments_cfg["defaults"]["encoders"]))
 
-    train_file = resolve_path(base_cfg["paths"]["train_file"])
-    dev_file = resolve_path(base_cfg["paths"]["dev_file"])
-    checkpoint_root = resolve_path(base_cfg["paths"]["checkpoint_dir"])
+    data_dir = os.environ.get("ABSA_DATA_DIR")
+    if data_dir:
+        data_root = Path(data_dir).expanduser().resolve()
+        train_file = data_root / "train.jsonl"
+        dev_file = data_root / "dev.jsonl"
+    else:
+        train_file = resolve_path(base_cfg["paths"]["train_file"])
+        dev_file = resolve_path(base_cfg["paths"]["dev_file"])
+
+    checkpoint_root = get_env_path(
+        "ABSA_OUTPUT_DIR",
+        resolve_path(base_cfg["paths"]["checkpoint_dir"]),
+    )
 
     data_cfg = base_cfg["data"]
     train_cfg = base_cfg["training"]
@@ -283,6 +312,7 @@ def main():
         raise FileNotFoundError(f"Dev file not found: {dev_file}")
 
     print(f"Project root: {PROJECT_ROOT}")
+    print(f"Experiments config: {experiments_path}")
     print(f"Train file: {train_file}")
     print(f"Dev file: {dev_file}")
     print(f"Checkpoint root: {checkpoint_root}")
