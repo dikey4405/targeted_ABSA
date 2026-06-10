@@ -258,7 +258,7 @@ class ABSATrainer:
 
 
 def main():
-    experiments_path = PROJECT_ROOT / "config" / "experiments.yaml"
+    experiments_path = "config/experiments.yaml"
     experiments_cfg = load_yaml(experiments_path)
     base_cfg = load_yaml(resolve_path(experiments_cfg["defaults"]["base"]))
     encoders_cfg = load_yaml(resolve_path(experiments_cfg["defaults"]["encoders"]))
