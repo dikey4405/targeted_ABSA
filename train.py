@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 from typing import Dict, Iterable, Optional
 
@@ -13,6 +14,10 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from transformers import get_linear_schedule_with_warmup
 
+SOURCE_ROOT = Path(__file__).resolve().parent
+if str(SOURCE_ROOT) not in sys.path:
+    sys.path.insert(0, str(SOURCE_ROOT))
+
 from dataloader import build_dataloader
 from model.targeted_absa import TargetedABSAModel
 from vocabulary import Vocabulary
@@ -20,7 +25,7 @@ from vocabulary import Vocabulary
 transformers.logging.set_verbosity_error()
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = SOURCE_ROOT.parent
 WORKSPACE_ROOT = PROJECT_ROOT.parent
 PROJECT_NAME = PROJECT_ROOT.name
 
