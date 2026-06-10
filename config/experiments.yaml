@@ -9,113 +9,64 @@ defaults:
   losses: ABSA_targeted/config/losses.yaml
 
 experiment_groups:
-  encoder_comparison:
-    description: Compare pretrained feature extractors with the same model head.
+  high_score_experiments:
+    description: Small set of high-potential targeted ABSA experiments prioritized for best macro F1.
     runs:
-      - name: enc_phobert_base
+      - name: baseline_phobert_cls_multitask
+        purpose: Lightweight baseline for comparison.
         encoder_key: phobert_base
         label_structure_key: multitask_aspect_sentiment
         attention_key: cls_pooling
         loss_key: multitask_ce
-      - name: enc_phobert_large
+        sample_unit: annotation
+
+      - name: phobert_large_cls_weighted
+        purpose: Strong Vietnamese encoder with class imbalance handling.
         encoder_key: phobert_large
         label_structure_key: multitask_aspect_sentiment
         attention_key: cls_pooling
-        loss_key: multitask_ce
-      - name: enc_xlm_roberta_base
-        encoder_key: xlm_roberta_base
-        label_structure_key: multitask_aspect_sentiment
-        attention_key: cls_pooling
-        loss_key: multitask_ce
-      - name: enc_xlm_roberta_large
-        encoder_key: xlm_roberta_large
-        label_structure_key: multitask_aspect_sentiment
-        attention_key: cls_pooling
-        loss_key: multitask_ce
+        loss_key: multitask_weighted_ce
+        sample_unit: annotation
 
-  label_structure_comparison:
-    description: Compare output label representations.
-    runs:
-      - name: label_joint
-        label_structure_key: joint_label
-        attention_key: cls_pooling
-        loss_key: joint_ce
-        sample_unit: annotation
-      - name: label_multitask
+      - name: phobert_large_target_attn_weighted
+        purpose: Best first candidate; combines PhoBERT-large, target-aware attention, and weighted loss.
+        encoder_key: phobert_large
         label_structure_key: multitask_aspect_sentiment
-        attention_key: cls_pooling
-        loss_key: multitask_ce
+        attention_key: target_conditioned_attention
+        loss_key: multitask_weighted_ce
         sample_unit: annotation
-      - name: label_multitask_joint_aux
+
+      - name: phobert_large_target_attn_joint_aux
+        purpose: Adds full-label supervision to improve consistency between aspect and sentiment.
+        encoder_key: phobert_large
         label_structure_key: multitask_with_joint_aux
-        attention_key: cls_pooling
+        attention_key: target_conditioned_attention
         loss_key: joint_aux_loss
         sample_unit: annotation
-      - name: label_grid_3
-        label_structure_key: aspect_sentiment_vector_3
-        attention_key: cls_pooling
-        loss_key: grid_bce
-        sample_unit: target_group
-      - name: label_grid_4
-        label_structure_key: aspect_sentiment_vector_4
-        attention_key: cls_pooling
-        loss_key: grid_focal
-        sample_unit: target_group
 
-  loss_comparison:
-    description: Compare loss functions for multitask aspect and sentiment learning.
-    runs:
-      - name: loss_multitask_ce
+      - name: phobert_large_target_attn_focal
+        purpose: Alternative imbalance strategy for rare aspect/sentiment classes.
+        encoder_key: phobert_large
         label_structure_key: multitask_aspect_sentiment
-        attention_key: cls_pooling
-        loss_key: multitask_ce
-      - name: loss_weighted_ce
-        label_structure_key: multitask_aspect_sentiment
-        attention_key: cls_pooling
-        loss_key: multitask_weighted_ce
-      - name: loss_focal
-        label_structure_key: multitask_aspect_sentiment
-        attention_key: cls_pooling
-        loss_key: focal_multitask
-      - name: loss_uncertainty
-        label_structure_key: multitask_aspect_sentiment
-        attention_key: cls_pooling
-        loss_key: uncertainty_weighted_multitask
-      - name: loss_gated
-        label_structure_key: multitask_aspect_sentiment
-        attention_key: cls_pooling
-        loss_key: gated_loss
-
-  attention_comparison:
-    description: Compare pooling and attention variants.
-    runs:
-      - name: attn_cls
-        attention_key: cls_pooling
-        label_structure_key: multitask_aspect_sentiment
-        loss_key: multitask_ce
-      - name: attn_mean
-        attention_key: mean_pooling
-        label_structure_key: multitask_aspect_sentiment
-        loss_key: multitask_ce
-      - name: attn_pooling
-        attention_key: attention_pooling
-        label_structure_key: multitask_aspect_sentiment
-        loss_key: multitask_ce
-      - name: attn_gated_cls_pooling
-        attention_key: cls_attention_gated_fusion
-        label_structure_key: multitask_aspect_sentiment
-        loss_key: multitask_ce
-      - name: attn_target_conditioned
         attention_key: target_conditioned_attention
+        loss_key: focal_multitask
+        sample_unit: annotation
+
+      - name: phobert_large_cascaded_attn_weighted
+        purpose: Stronger target-aware attention; useful if aspect prediction should guide sentiment prediction.
+        encoder_key: phobert_large
         label_structure_key: multitask_aspect_sentiment
-        loss_key: multitask_ce
-      - name: attn_cascaded
         attention_key: cascaded_attention
-        label_structure_key: multitask_aspect_sentiment
-        loss_key: multitask_ce
+        loss_key: multitask_weighted_ce
+        sample_unit: annotation
+
+optional_later_runs:
+  - name: xlm_roberta_large_target_attn_weighted
+    reason: Run only if PhoBERT-large underperforms on mixed-domain data.
+  - name: phobert_large_gated_fusion_weighted
+    reason: Run only if target-conditioned attention beats CLS and you want one extra attention ablation.
 
 recommended_first_runs:
-  - enc_phobert_base
-  - label_multitask
-  - loss_weighted_ce
-  - attn_target_conditioned
+  - phobert_large_target_attn_weighted
+  - phobert_large_target_attn_joint_aux
+  - phobert_large_target_attn_focal
