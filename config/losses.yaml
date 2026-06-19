@@ -47,6 +47,21 @@ losses:
         alpha: auto
         weight: 1.0
 
+  focal_multitask_soft:
+    description: Softer focal loss without class weights; safer when weighted focal over-focuses noisy rare classes.
+    type: weighted_sum
+    components:
+      aspect:
+        loss: focal
+        gamma: 1.0
+        alpha: none
+        weight: 1.0
+      sentiment:
+        loss: focal
+        gamma: 1.0
+        alpha: none
+        weight: 1.0
+
   uncertainty_weighted_multitask:
     description: Learn task weights with homoscedastic uncertainty.
     type: uncertainty_weighted
@@ -82,6 +97,20 @@ losses:
       joint_label:
         loss: cross_entropy
         weight: 0.5
+
+  joint_aux_ce:
+    description: Unweighted aspect/sentiment CE with an auxiliary full-label CE; stable high-score candidate when weighted losses overfit noisy rare labels.
+    type: weighted_sum
+    components:
+      aspect:
+        loss: cross_entropy
+        weight: 1.0
+      sentiment:
+        loss: cross_entropy
+        weight: 1.0
+      joint_label:
+        loss: cross_entropy
+        weight: 0.3
 
   grid_bce:
     description: BCE loss for aspect-sentiment grid output.
