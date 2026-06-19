@@ -107,6 +107,8 @@ class ABSATrainer:
         self.label_weighted_criterion = nn.CrossEntropyLoss(weight=self.label_weights)
         self.aspect_focal = FocalLoss(weight=self.aspect_weights, gamma=2.0)
         self.sentiment_focal = FocalLoss(weight=self.sentiment_weights, gamma=2.0)
+        self.aspect_soft_focal = FocalLoss(weight=None, gamma=1.0)
+        self.sentiment_soft_focal = FocalLoss(weight=None, gamma=1.0)
 
     def _make_weights(self, ids, num_classes):
         counts = torch.zeros(num_classes, dtype=torch.float)
@@ -154,6 +156,12 @@ class ABSATrainer:
             loss_a = self.aspect_focal(outputs["aspect_logits"], batch["aspect_id"].to(self.device))
             loss_s = self.sentiment_focal(outputs["sentiment_logits"], batch["sentiment_id"].to(self.device))
             return loss_a + loss_s
+
+        # --- CẤU TRÚC 3b: Focal nhẹ, tránh over-focus vào rare/noisy labels ---
+        elif self.loss_key == "focal_multitask_soft":
+            loss_a = self.aspect_soft_focal(outputs["aspect_logits"], batch["aspect_id"].to(self.device))
+            loss_s = self.sentiment_soft_focal(outputs["sentiment_logits"], batch["sentiment_id"].to(self.device))
+            return loss_a + loss_s
             
         # --- CẤU TRÚC 4: Joint Label ---
         elif self.loss_key == "joint_ce":
@@ -165,6 +173,13 @@ class ABSATrainer:
             loss_s = self.sentiment_weighted_criterion(outputs["sentiment_logits"], batch["sentiment_id"].to(self.device))
             loss_j = self.label_weighted_criterion(outputs["label_logits"], batch["label_id"].to(self.device))
             return loss_a + loss_s + 0.5 * loss_j
+
+        # --- CẤU TRÚC 5b: Joint auxiliary CE nhẹ, ổn định hơn weighted joint aux ---
+        elif self.loss_key == "joint_aux_ce":
+            loss_a = self.criterion(outputs["aspect_logits"], batch["aspect_id"].to(self.device))
+            loss_s = self.criterion(outputs["sentiment_logits"], batch["sentiment_id"].to(self.device))
+            loss_j = self.criterion(outputs["label_logits"], batch["label_id"].to(self.device))
+            return loss_a + loss_s + 0.3 * loss_j
 
         raise ValueError(f"Loss key chưa được hỗ trợ: {self.loss_key}")
 
