@@ -12,30 +12,6 @@ experiment_groups:
   high_score_experiments:
     description: Small set of high-potential targeted ABSA experiments prioritized for best macro F1.
     runs:
-      - name: baseline_phobert_cls_multitask
-        purpose: Lightweight baseline for comparison.
-        encoder_key: phobert_base
-        label_structure_key: multitask_aspect_sentiment
-        attention_key: cls_pooling
-        loss_key: multitask_ce
-        sample_unit: annotation
-
-      - name: phobert_large_cls_weighted
-        purpose: Strong Vietnamese encoder with class imbalance handling.
-        encoder_key: phobert_large
-        label_structure_key: multitask_aspect_sentiment
-        attention_key: cls_pooling
-        loss_key: multitask_weighted_ce
-        sample_unit: annotation
-
-      - name: phobert_large_target_attn_ce
-        purpose: Target-aware attention without class weighting; checks whether weighted loss is hurting frequent clean classes.
-        encoder_key: phobert_large
-        label_structure_key: multitask_aspect_sentiment
-        attention_key: target_conditioned_attention
-        loss_key: multitask_ce
-        sample_unit: annotation
-
       - name: phobert_large_target_attn_weighted
         purpose: Best first candidate; combines PhoBERT-large, target-aware attention, and weighted loss.
         encoder_key: phobert_large
