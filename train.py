@@ -109,6 +109,7 @@ class ABSATrainer:
         self.sentiment_focal = FocalLoss(weight=self.sentiment_weights, gamma=2.0)
         self.aspect_soft_focal = FocalLoss(weight=None, gamma=1.0)
         self.sentiment_soft_focal = FocalLoss(weight=None, gamma=1.0)
+        self.label_to_aspect, self.label_to_sentiment = self._build_label_projection()
 
     def _make_weights(self, ids, num_classes):
         counts = torch.zeros(num_classes, dtype=torch.float)
@@ -136,6 +137,34 @@ class ABSATrainer:
         sentiment_weights = self._make_weights(sentiment_ids, vocab.num_sentiments)
         label_weights = self._make_weights(label_ids, vocab.num_labels)
         return aspect_weights, sentiment_weights, label_weights
+
+    def _build_label_projection(self):
+        dataset = self.train_loader.dataset
+        vocab = getattr(dataset, "vocab", None)
+        if vocab is None:
+            return None, None
+
+        label_to_aspect = torch.zeros(vocab.num_labels, vocab.num_aspects, dtype=torch.float)
+        label_to_sentiment = torch.zeros(vocab.num_labels, vocab.num_sentiments, dtype=torch.float)
+
+        for label_id, label in vocab.id2label.items():
+            aspect, sentiment = vocab.split_label(label)
+            label_to_aspect[label_id, vocab.encode_aspect(aspect)] = 1.0
+            label_to_sentiment[label_id, vocab.encode_sentiment(sentiment)] = 1.0
+
+        return label_to_aspect.to(self.device), label_to_sentiment.to(self.device)
+
+    def _joint_consistency_loss(self, outputs):
+        aspect_probs = torch.softmax(outputs["aspect_logits"], dim=-1)
+        sentiment_probs = torch.softmax(outputs["sentiment_logits"], dim=-1)
+        joint_probs = torch.softmax(outputs["label_logits"], dim=-1)
+
+        aspect_from_joint = torch.matmul(joint_probs, self.label_to_aspect)
+        sentiment_from_joint = torch.matmul(joint_probs, self.label_to_sentiment)
+
+        aspect_consistency = F.mse_loss(aspect_probs, aspect_from_joint)
+        sentiment_consistency = F.mse_loss(sentiment_probs, sentiment_from_joint)
+        return aspect_consistency + sentiment_consistency
 
     def compute_loss(self, outputs, batch):
         """Hàm Loss linh hoạt dựa trên loss_key từ config"""
@@ -180,6 +209,14 @@ class ABSATrainer:
             loss_s = self.criterion(outputs["sentiment_logits"], batch["sentiment_id"].to(self.device))
             loss_j = self.criterion(outputs["label_logits"], batch["label_id"].to(self.device))
             return loss_a + loss_s + 0.3 * loss_j
+
+        # --- CẤU TRÚC 5c: Tối ưu joint F1 bằng consistency giữa joint/aspect/sentiment ---
+        elif self.loss_key == "joint_consistency_loss":
+            loss_a = self.criterion(outputs["aspect_logits"], batch["aspect_id"].to(self.device))
+            loss_s = self.criterion(outputs["sentiment_logits"], batch["sentiment_id"].to(self.device))
+            loss_j = self.criterion(outputs["label_logits"], batch["label_id"].to(self.device))
+            loss_c = self._joint_consistency_loss(outputs)
+            return loss_a + loss_s + 0.4 * loss_j + 0.2 * loss_c
 
         raise ValueError(f"Loss key chưa được hỗ trợ: {self.loss_key}")
 
