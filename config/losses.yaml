@@ -112,6 +112,23 @@ losses:
         loss: cross_entropy
         weight: 0.3
 
+  joint_consistency_loss:
+    description: Joint-F1-oriented loss. Trains aspect, sentiment, and full-label heads while enforcing consistency between joint-label probabilities and aspect/sentiment probabilities.
+    type: consistency_regularized
+    components:
+      aspect:
+        loss: cross_entropy
+        weight: 1.0
+      sentiment:
+        loss: cross_entropy
+        weight: 1.0
+      joint_label:
+        loss: cross_entropy
+        weight: 0.4
+      consistency:
+        loss: probability_mse
+        weight: 0.2
+
   grid_bce:
     description: BCE loss for aspect-sentiment grid output.
     type: binary_cross_entropy_with_logits
