@@ -15,13 +15,10 @@
 # 1. Clone / cd into repo
 cd /path/to/targeted_ABSA
 
-# 2. Create Python venv (only once)
-uv venv .venv
+# 2. Create Python venv và install deps (only once)
+uv sync
 
-# 3. Install backend deps into venv (only once)
-uv pip install -r requirements.txt
-
-# 4. Install frontend deps (only once)
+# 3. Install frontend deps (only once)
 cd frontend && npm install && cd ..
 ```
 
@@ -91,7 +88,7 @@ curl http://localhost:8000/models
 **`No module named 'fastapi'`**
 → Chưa install deps:
 ```bash
-uv pip install -r requirements.txt
+uv sync
 ```
 
 **`RuntimeError: size mismatch`**
