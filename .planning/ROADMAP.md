@@ -62,6 +62,13 @@ Plans:
 
 **Requirements:** FE-01, FE-02, FE-03, FE-04, FE-05, FE-06, FE-07, FE-08, FE-09, FE-13, FE-14, FE-15
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — index.html metadata (title, lang, preconnect) + App.css font-size fix + 768px breakpoint + h1 title
+- [ ] 02-02-PLAN.md — extract ReviewInput.jsx (selectionStart/End, NFC normalize) + TargetSelector.jsx from App.jsx
+- [ ] 02-03-PLAN.md — usePredict.js hook + PredictButton.jsx (spinner) + PredictionResult.jsx (aspect chip, bars) + final App.jsx wiring
+
 **UAT:**
 
 - User types Vietnamese text in textarea, highlights a target phrase, clicks Predict → result displays in < 5s
