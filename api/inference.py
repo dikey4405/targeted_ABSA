@@ -64,7 +64,7 @@ class InferenceEngine:
         device_str: str = os.getenv("DEVICE", "")
         encoder_key: str = os.getenv("MODEL_ENCODER_KEY", "phobert_large")
         attention_key: str = os.getenv("MODEL_ATTENTION_KEY", "target_conditioned_attention")
-        label_structure: str = os.getenv("MODEL_LABEL_STRUCTURE", "multitask_aspect_sentiment")
+        label_structure: str = os.getenv("MODEL_LABEL_STRUCTURE", "multitask_with_joint_aux")
 
         # ------------------------------------------------------------------
         # Step 3 — Store for /models endpoint.
@@ -100,8 +100,6 @@ class InferenceEngine:
         # ------------------------------------------------------------------
         data_files = [
             os.path.join(data_dir, "train.jsonl"),
-            os.path.join(data_dir, "dev.jsonl"),
-            os.path.join(data_dir, "test.jsonl"),
         ]
         print(f"[InferenceEngine] Loading Vocabulary from {data_dir}/ ...")
         self.vocab: Vocabulary = Vocabulary(data_files, encoder_name)
@@ -135,10 +133,11 @@ class InferenceEngine:
             encoder_name=encoder_name,
             num_aspects=self.vocab.num_aspects,
             num_sentiments=self.vocab.num_sentiments,
+            num_labels=self.vocab.num_labels,
             label_structure_key=label_structure,
             attention_key=attention_key,
-            dropout=0.2,                # matches training; model.eval() disables it
-            classifier_hidden_size=256,  # matches config/base.yaml
+            dropout=0.2,
+            classifier_hidden_size=256,
         )
 
         # ------------------------------------------------------------------
@@ -153,7 +152,9 @@ class InferenceEngine:
         )
         if any(k.startswith("module.") for k in state_dict):
             state_dict = {k[len("module."):]: v for k, v in state_dict.items()}
-        model.load_state_dict(state_dict)
+        # Drop joint_head weights — size may differ from vocab; not used for inference
+        state_dict = {k: v for k, v in state_dict.items() if not k.startswith("joint_head")}
+        model.load_state_dict(state_dict, strict=False)
 
         # ------------------------------------------------------------------
         # Step 10 — Finalize: move to device, switch to eval mode.
