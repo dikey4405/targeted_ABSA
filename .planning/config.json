@@ -1,0 +1,24 @@
+{
+  "graphify": {
+    "enabled": true
+  },
+  "mode": "yolo",
+  "granularity": "balanced",
+  "parallelization": true,
+  "commit_docs": true,
+  "model_profile": "adaptive",
+  "workflow": {
+    "research": true,
+    "plan_check": true,
+    "verifier": true,
+    "nyquist_validation": true,
+    "auto_advance": true,
+    "_auto_chain_active": true
+  },
+  "plan_review": {
+    "source_grounding": true
+  },
+  "ship": {
+    "pr_body_sections": []
+  }
+}
