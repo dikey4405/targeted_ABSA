@@ -55,7 +55,7 @@ A FastAPI server starts up, loads `TargetedABSAModel` + `Vocabulary` from existi
 
 8. **requirements.txt**: Reproducible inference environment.
    - Current: No `requirements.txt` exists in the repository.
-   - Target: `requirements.txt` at project root covers all inference server dependencies: `fastapi`, `uvicorn[standard]`, `torch`, `transformers`, `pydantic`, `pyyaml`, `scikit-learn`, `tqdm` with pinned major.minor versions.
+   - Target: `requirements.txt` at project root covers all inference server dependencies: `fastapi`, `uvicorn[standard]`, `torch`, `transformers`, `pydantic`, `pyyaml` with pinned major.minor versions. (`scikit-learn` and `tqdm` are training-only deps not imported by `api/` — excluded from inference requirements.txt.)
    - Acceptance: `pip install -r requirements.txt && uvicorn api.main:app` succeeds in a fresh venv.
 
 ## Boundaries
