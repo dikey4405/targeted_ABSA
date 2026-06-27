@@ -1,1 +1,8 @@
 graphify-out/
+
+# Model checkpoint binaries — too large for git
+checkpoints/*.pt
+*.pt
+
+# Local env overrides — never commit actual secrets/paths
+.env
