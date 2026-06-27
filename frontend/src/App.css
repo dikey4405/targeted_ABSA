@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body { font-family: 'Be Vietnam Pro', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+.app { max-width: 780px; margin: 0 auto; padding: 2rem 1rem; }
+
+header { text-align: center; margin-bottom: 2.5rem; }
+header h1 { font-size: 2rem; font-weight: 700; color: #f8fafc; }
+header p { color: #94a3b8; margin-top: .4rem; font-size: .95rem; }
+header a { color: #60a5fa; font-size: .85rem; text-decoration: none; }
+header a:hover { text-decoration: underline; }
+
+section { background: #1e293b; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+
+label { display: block; font-size: .85rem; font-weight: 600; color: #94a3b8; margin-bottom: .4rem; margin-top: 1rem; }
+label:first-child { margin-top: 0; }
+.hint { font-weight: 400; color: #64748b; }
+
+textarea, input[type="text"] {
+  width: 100%; padding: .75rem 1rem; border-radius: 8px;
+  border: 1px solid #334155; background: #0f172a; color: #f1f5f9;
+  font-family: inherit; font-size: .95rem; resize: vertical;
+  transition: border-color .2s;
+}
+textarea:focus, input:focus { outline: none; border-color: #3b82f6; }
+textarea::selection { background: #3b82f6; color: #fff; }
+
+.predict-btn {
+  margin-top: 1.2rem; width: 100%; padding: .85rem;
+  background: #3b82f6; color: #fff; font-family: inherit;
+  font-size: 1rem; font-weight: 600; border: none; border-radius: 8px;
+  cursor: pointer; transition: background .2s;
+}
+.predict-btn:hover:not(:disabled) { background: #2563eb; }
+.predict-btn:disabled { background: #334155; color: #64748b; cursor: not-allowed; }
+
+.error { margin-top: 1rem; padding: .75rem 1rem; background: #450a0a; border: 1px solid #b91c1c; border-radius: 8px; color: #fca5a5; font-size: .9rem; }
+
+.result-main { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.badge { padding: .4rem .9rem; border-radius: 999px; font-size: .85rem; font-weight: 700; }
+.badge.aspect { background: #1e3a5f; color: #93c5fd; border: 1px solid #3b82f6; }
+.badge.sentiment { color: #fff; }
+.latency { font-size: .78rem; color: #64748b; margin-left: auto; }
+
+.probs { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 520px) { .probs { grid-template-columns: 1fr; } }
+
+.prob-col h4 { font-size: .8rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .75rem; }
+.prob-row { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; }
+.prob-label { font-size: .75rem; color: #94a3b8; width: 140px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prob-bar-bg { flex: 1; height: 6px; background: #334155; border-radius: 3px; overflow: hidden; }
+.prob-bar { height: 100%; background: #3b82f6; border-radius: 3px; transition: width .4s ease; }
+.prob-score { font-size: .75rem; color: #64748b; width: 42px; text-align: right; flex-shrink: 0; }
+
+.examples h3 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+.example-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+@media (max-width: 520px) { .example-grid { grid-template-columns: 1fr; } }
+
+.example-card {
+  background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+  padding: .75rem; text-align: left; cursor: pointer; font-family: inherit;
+  transition: border-color .2s, background .2s; display: flex; flex-direction: column; gap: .3rem;
+}
+.example-card:hover { border-color: #3b82f6; background: #1e293b; }
+.domain { font-size: .75rem; font-weight: 700; color: #64748b; }
+.ex-text { font-size: .82rem; color: #cbd5e1; line-height: 1.4; }
+.ex-target { font-size: .78rem; color: #60a5fa; }
