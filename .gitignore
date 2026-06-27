@@ -5,6 +5,7 @@ checkpoints/*.pt
 *.pt
 
 # Local env overrides — never commit actual secrets/paths
-.env.venv/
+.env
+.venv/
 frontend/dist/
 frontend/node_modules/
