@@ -19,8 +19,7 @@ cd /path/to/targeted_ABSA
 uv venv .venv
 
 # 3. Install backend deps into venv (only once)
-uv pip install --python .venv/bin/python \
-  fastapi "uvicorn[standard]" pydantic pyyaml torch transformers
+uv pip install -r requirements.txt
 
 # 4. Install frontend deps (only once)
 cd frontend && npm install && cd ..
@@ -36,7 +35,7 @@ Open **2 terminals** in the repo root.
 
 ```bash
 cd /path/to/targeted_ABSA
-PYTHONPATH=. .venv/bin/uvicorn api.main:app --workers 1 --port 8000
+PYTHONPATH=. uv run uvicorn api.main:app --workers 1 --port 8000
 ```
 
 Wait for: `Application startup complete.`
@@ -65,7 +64,7 @@ Open **http://localhost:5173**
 Example with overrides:
 ```bash
 CHECKPOINT_PATH=checkpoints/other_model.pt MODEL_ENCODER_KEY=phobert_base \
-  PYTHONPATH=. .venv/bin/uvicorn api.main:app --workers 1 --port 8000
+  PYTHONPATH=. uv run uvicorn api.main:app --workers 1 --port 8000
 ```
 
 ---
@@ -90,9 +89,9 @@ curl http://localhost:8000/models
 ## Troubleshooting
 
 **`No module named 'fastapi'`**
-→ Forgot to activate / use venv:
+→ Chưa install deps:
 ```bash
-uv pip install --python .venv/bin/python fastapi "uvicorn[standard]"
+uv pip install -r requirements.txt
 ```
 
 **`RuntimeError: size mismatch`**
