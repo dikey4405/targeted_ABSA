@@ -1,0 +1,31 @@
+[
+  {
+    "run_name": "phobert_large_target_attn_weighted",
+    "checkpoint": "D:\\Python\\ABSA_targeted\\source\\checkpoints\\best_model.pt",
+    "test_stats": {
+      "total_annotations": 3774,
+      "kept_annotations": 3772,
+      "skipped_annotations": 2,
+      "unseen_supported_full_labels": [
+        "LOCATION#MISCELLANEOUS#POSITIVE"
+      ],
+      "skipped_full_labels": [
+        "HOTEL#STYLE&OPTIONS#NEGATIVE",
+        "SERVICE#DESIGN&FEATURES#POSITIVE"
+      ],
+      "missing_aspects": [
+        "HOTEL#STYLE&OPTIONS",
+        "SERVICE#DESIGN&FEATURES"
+      ],
+      "missing_sentiments": []
+    },
+    "metrics": {
+      "aspect_macro_f1": 0.43246855025404596,
+      "sentiment_macro_f1": 0.7251300631372928,
+      "joint_macro_f1": 0.410260577343875,
+      "aspect_accuracy": 0.6696712619300106,
+      "sentiment_accuracy": 0.9122481442205727,
+      "joint_accuracy": 0.6267232237539767
+    }
+  }
+]
