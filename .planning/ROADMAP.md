@@ -13,6 +13,7 @@
 **Goal:** A working FastAPI server that loads the ABSA model and serves predictions via REST.
 
 **Delivers:**
+
 - `api/` directory with FastAPI app, inference engine, and Pydantic schemas
 - `requirements.txt` covering all inference dependencies
 - Health check, predict, and model-info endpoints
@@ -20,20 +21,23 @@
 
 **Requirements:** API-01, API-02, API-03, API-04, API-05, API-06, API-07, SETUP-01
 
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 
 Plans:
-- [ ] 01-01-PLAN.md — Pydantic schemas (api/schemas.py) + requirements.txt, .env.example, checkpoints directory
+
+- [x] 01-01-PLAN.md — Pydantic schemas (api/schemas.py) + requirements.txt, .env.example, checkpoints directory
 - [ ] 01-02-PLAN.md — InferenceEngine class (api/__init__.py, api/inference.py) with model loading, asyncio.Lock, NFC normalization, predict()
 - [ ] 01-03-PLAN.md — FastAPI app (api/main.py) with lifespan, CORS, /predict /health /models endpoints + Makefile
 
 **UAT:**
+
 - `curl -X POST http://localhost:8000/predict -d '{"text":"Phòng khách sạn rất sạch sẽ","target":"Phòng"}' -H "Content-Type: application/json"` returns `{"aspect":"ROOMS#CLEANLINESS","sentiment":"POSITIVE","aspect_probs":{...},"sentiment_probs":{...},"latency_ms":...}`
 - `curl http://localhost:8000/health` returns `{"status":"ok","model_loaded":true,"device":"cpu"}`
 - Request where `target` is not substring of `text` returns HTTP 422 with descriptive message
 - Server starts with `uvicorn api.main:app --workers 1` (single worker due to model memory)
 
 **Key constraints from research:**
+
 - Use `model.load_state_dict(torch.load(path, weights_only=True)['model_state_dict'])` — `train.py` saves state-dict only
 - `Vocabulary` scans JSONL files at startup — point `DATA_DIR` env var to `Data/`
 - Single asyncio.Lock() for inference — phobert-large is CPU-bound ~1s/request
@@ -47,6 +51,7 @@ Plans:
 **Goal:** React/Vite SPA with text input, target phrase selection, and prediction result display.
 
 **Delivers:**
+
 - `frontend/` Vite + React project scaffold
 - `ReviewInput` component: textarea + selectionStart/End-based target capture
 - `TargetSelector` component: shows selected span, allows manual override
@@ -58,6 +63,7 @@ Plans:
 **Requirements:** FE-01, FE-02, FE-03, FE-04, FE-05, FE-06, FE-07, FE-08, FE-09, FE-13, FE-14, FE-15
 
 **UAT:**
+
 - User types Vietnamese text in textarea, highlights a target phrase, clicks Predict → result displays in < 5s
 - Predict button is disabled when text or target field is empty
 - Loading spinner shown during API call
@@ -66,6 +72,7 @@ Plans:
 - Layout works on 320px mobile viewport and 1280px desktop
 
 **Key constraints from research:**
+
 - Use `selectionStart`/`selectionEnd` from textarea — NOT contenteditable (breaks Vietnamese diacritics)
 - Send target as string to API, not character offsets
 - Normalize to NFC before sending: `text.normalize('NFC')`
@@ -79,6 +86,7 @@ Plans:
 **Goal:** Pre-loaded examples, UX polish, and dev workflow automation.
 
 **Delivers:**
+
 - 6 curated example cards (2 hotel, 2 restaurant, 2 mobile) with one-click predict
 - Domain labels on example cards (hotel/restaurant/mobile)
 - Responsive layout polish and font: `Be Vietnam Pro` from Google Fonts
@@ -89,6 +97,7 @@ Plans:
 **Requirements:** FE-10, FE-11, FE-12, SETUP-02, SETUP-03
 
 **UAT:**
+
 - 6 example cards visible below the input form
 - Clicking any example card pre-fills text + target and triggers prediction
 - Cards show domain tag (e.g., "🏨 Hotel", "🍴 Restaurant", "📱 Mobile")
@@ -97,6 +106,7 @@ Plans:
 - Vietnamese text renders correctly with diacritics on Chrome, Firefox, Safari
 
 **Curated examples (from domain research):**
+
 1. Hotel: `"Phòng khách sạn rất sạch sẽ và thoáng mát"` / target: `"Phòng"` → ROOMS#CLEANLINESS / POSITIVE
 2. Hotel: `"Khăn tắm cũ và có vết bẩn"` / target: `"Khăn tắm"` → ROOM_AMENITIES#* / NEGATIVE
 3. Restaurant: `"Món ăn rất ngon, phục vụ nhanh"` / target: `"Món ăn"` → FOOD#* / POSITIVE
@@ -120,7 +130,7 @@ Plans:
 
 | Phase | Focus | Key Deliverable | Requirements |
 |-------|-------|-----------------|--------------|
-| 1 | Inference API | `api/` FastAPI + `requirements.txt` | API-01–07, SETUP-01 |
+| 1 | 1/3 | In Progress|  |
 | 2 | Frontend Foundation | `frontend/` React app | FE-01–09, FE-13–15 |
 | 3 | Examples & Polish | Demo cards + dev workflow | FE-10–12, SETUP-02–03 |
 

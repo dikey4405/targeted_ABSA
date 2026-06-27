@@ -44,7 +44,7 @@
 
 ### Project Setup
 
-- [ ] **SETUP-01**: `requirements.txt` covering all inference server dependencies (fastapi, uvicorn, torch, transformers, etc.)
+- [x] **SETUP-01**: `requirements.txt` covering all inference server dependencies (fastapi, uvicorn, torch, transformers, etc.)
 - [ ] **SETUP-02**: `README.md` updated with demo setup instructions (install, checkpoint path, start commands)
 - [ ] **SETUP-03**: `dev.sh` or Makefile target to run API + Vite dev server concurrently with a single command
 
@@ -86,6 +86,7 @@
 | SETUP-01–03 | Phase 1: Inference API | Pending |
 
 **Coverage:**
+
 - v1 requirements: 18 total
 - Mapped to phases: 18
 - Unmapped: 0 ✓
