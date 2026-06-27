@@ -11,9 +11,9 @@
 - [ ] **API-02**: `GET /health` returns `{"status": "ok", "model_loaded": bool, "device": str}`
 - [ ] **API-03**: `GET /models` returns available encoder configs and which is active
 - [ ] **API-04**: CORS headers configured so the frontend (localhost:5173 + production origin) can call the API
-- [ ] **API-05**: Validate that `target` is an exact substring of `text` (required by `_build_target_mask`); return 422 with message if not; return 503 if model not loaded; return 500 with message for inference errors
-- [ ] **API-06**: Model and `Vocabulary` load from checkpoint + JSONL data files on server startup; API returns 503 until both are ready
-- [ ] **API-07**: Input text and target normalized to Unicode NFC before inference (prevents tokenization mismatch from iOS/macOS copy-paste NFD input)
+- [x] **API-05**: Validate that `target` is an exact substring of `text` (required by `_build_target_mask`); return 422 with message if not; return 503 if model not loaded; return 500 with message for inference errors
+- [x] **API-06**: Model and `Vocabulary` load from checkpoint + JSONL data files on server startup; API returns 503 until both are ready
+- [x] **API-07**: Input text and target normalized to Unicode NFC before inference (prevents tokenization mismatch from iOS/macOS copy-paste NFD input)
 
 ### Frontend — Input
 

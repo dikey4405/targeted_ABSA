@@ -21,12 +21,12 @@
 
 **Requirements:** API-01, API-02, API-03, API-04, API-05, API-06, API-07, SETUP-01
 
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 
 - [x] 01-01-PLAN.md — Pydantic schemas (api/schemas.py) + requirements.txt, .env.example, checkpoints directory
-- [ ] 01-02-PLAN.md — InferenceEngine class (api/__init__.py, api/inference.py) with model loading, asyncio.Lock, NFC normalization, predict()
+- [x] 01-02-PLAN.md — InferenceEngine class (api/__init__.py, api/inference.py) with model loading, asyncio.Lock, NFC normalization, predict()
 - [ ] 01-03-PLAN.md — FastAPI app (api/main.py) with lifespan, CORS, /predict /health /models endpoints + Makefile
 
 **UAT:**
@@ -130,7 +130,7 @@ Plans:
 
 | Phase | Focus | Key Deliverable | Requirements |
 |-------|-------|-----------------|--------------|
-| 1 | 1/3 | In Progress|  |
+| 1 | 2/3 | In Progress|  |
 | 2 | Frontend Foundation | `frontend/` React app | FE-01–09, FE-13–15 |
 | 3 | Examples & Polish | Demo cards + dev workflow | FE-10–12, SETUP-02–03 |
 
