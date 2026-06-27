@@ -20,6 +20,13 @@
 
 **Requirements:** API-01, API-02, API-03, API-04, API-05, API-06, API-07, SETUP-01
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Pydantic schemas (api/schemas.py) + requirements.txt, .env.example, checkpoints directory
+- [ ] 01-02-PLAN.md — InferenceEngine class (api/__init__.py, api/inference.py) with model loading, asyncio.Lock, NFC normalization, predict()
+- [ ] 01-03-PLAN.md — FastAPI app (api/main.py) with lifespan, CORS, /predict /health /models endpoints + Makefile
+
 **UAT:**
 - `curl -X POST http://localhost:8000/predict -d '{"text":"Phòng khách sạn rất sạch sẽ","target":"Phòng"}' -H "Content-Type: application/json"` returns `{"aspect":"ROOMS#CLEANLINESS","sentiment":"POSITIVE","aspect_probs":{...},"sentiment_probs":{...},"latency_ms":...}`
 - `curl http://localhost:8000/health` returns `{"status":"ok","model_loaded":true,"device":"cpu"}`
