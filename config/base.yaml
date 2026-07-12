@@ -6,11 +6,11 @@ project:
   description: Multi-task learning for aspect and sentiment prediction.
 
 paths:
-  train_file: ABSA_targeted/Data/hotel_train.jsonl
-  dev_file: ABSA_targeted/Data/hotel_dev.jsonl
-  test_file: ABSA_targeted/Data/hotel_test.jsonl
+  train_file: ABSA_targeted/Data/mobile_train.jsonl
+  dev_file: ABSA_targeted/Data/mobile_dev.jsonl
+  test_file: ABSA_targeted/Data/mobile_test.jsonl
   output_dir: ABSA_targeted/outputs
-  checkpoint_dir: ABSA_targeted/outputs/hotel_checkpoints
+  checkpoint_dir: ABSA_targeted/outputs/mobile_checkpoints
   log_dir: ABSA_targeted/outputs/logs
 
 data:
