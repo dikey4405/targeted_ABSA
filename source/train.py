@@ -433,13 +433,8 @@ def set_seed(seed: int):
 
 
 def main():
-    args = parse_args()
-    if args.domain == "combined":
-        train_data = "Data/train.jsonl"
-        val_data = "Data/dev.jsonl"
-    else:
-        train_data = f"Data/{args.domain}_train.jsonl"
-        val_data = f"Data/{args.domain}_dev.jsonl"
+    train_data = "Data/hotel_train.jsonl"
+    val_data = "Data/hotel_dev.jsonl"
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     set_seed(42)
