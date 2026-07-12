@@ -21,9 +21,9 @@ losses:
         weight: 1.0
 
   multitask_weighted_ce:
-    description: Class-weighted CE for imbalanced labels.
+    description: Class-weighted CE for aspect and sentiment; selected runs may add a structured joint CE term.
     type: weighted_sum
-    class_weighting: inverse_frequency
+    class_weighting: configurable_power_inverse_frequency
     components:
       aspect:
         loss: cross_entropy

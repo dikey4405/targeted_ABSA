@@ -12,11 +12,89 @@ experiment_groups:
   high_score_experiments:
     description: Small set of high-potential targeted ABSA experiments prioritized for best macro F1.
     runs:
-      - name: phobert_large_target_attn_weighted
-        purpose: Best first candidate; combines PhoBERT-large, target-aware attention, and weighted loss.
+      - name: baseline_phobert_cls_multitask
+        purpose: Lightweight baseline for comparison.
+        encoder_key: phobert_base
+        label_structure_key: multitask_aspect_sentiment
+        attention_key: cls_pooling
+        loss_key: multitask_ce
+        sample_unit: annotation
+
+      - name: phobert_large_cls_weighted
+        purpose: Strong Vietnamese encoder with class imbalance handling.
+        encoder_key: phobert_large
+        label_structure_key: multitask_aspect_sentiment
+        attention_key: cls_pooling
+        loss_key: multitask_weighted_ce
+        sample_unit: annotation
+
+      - name: phobert_large_target_attn_ce
+        purpose: Target-aware attention without class weighting; checks whether weighted loss is hurting frequent clean classes.
         encoder_key: phobert_large
         label_structure_key: multitask_aspect_sentiment
         attention_key: target_conditioned_attention
+        loss_key: multitask_ce
+        sample_unit: annotation
+
+      - name: phobert_large_target_attn_weighted
+        purpose: Domain-specific joint-aware PhoBERT-large with stable class weighting and constrained decoding.
+        encoder_key: phobert_large
+        label_structure_key: multitask_aspect_sentiment
+        attention_key: target_conditioned_attention
+        loss_key: multitask_weighted_ce
+        sample_unit: annotation
+        max_length: 192
+        batch_size: 8
+        epochs: 12
+        encoder_lr: 1.0e-5
+        head_lr: 5.0e-5
+        weight_decay: 0.01
+        warmup_ratio: 0.06
+        dropout: 0.15
+        class_weight_power: 0.5
+        max_class_weight: 4.0
+        sentiment_loss_weight: 1.0
+        structured_joint_loss_weight: 0.5
+        constrained_joint_decoding: true
+        early_stopping_patience: 3
+
+      - name: phobert_large_target_attn_joint_aux
+        purpose: Adds full-label supervision to improve consistency between aspect and sentiment.
+        encoder_key: phobert_large
+        label_structure_key: multitask_with_joint_aux
+        attention_key: target_conditioned_attention
+        loss_key: joint_aux_loss
+        sample_unit: annotation
+
+      - name: phobert_large_target_attn_joint_aux_ce_best
+        purpose: Best-score candidate; PhoBERT-large with target-aware attention and light unweighted joint auxiliary CE for stable joint Macro-F1.
+        encoder_key: phobert_large
+        label_structure_key: multitask_with_joint_aux
+        attention_key: target_conditioned_attention
+        loss_key: joint_aux_ce
+        sample_unit: annotation
+
+      - name: phobert_large_target_attn_joint_consistency_best
+        purpose: New highest-F1 candidate; directly regularizes agreement between aspect, sentiment, and full-label predictions to improve joint Macro-F1.
+        encoder_key: phobert_large
+        label_structure_key: multitask_with_joint_aux
+        attention_key: target_conditioned_attention
+        loss_key: joint_consistency_loss
+        sample_unit: annotation
+
+      - name: phobert_large_target_attn_soft_focal
+        purpose: Redesigned focal run; softer focal without class weights to avoid very low F1 from over-focusing rare/noisy labels.
+        encoder_key: phobert_large
+        label_structure_key: multitask_aspect_sentiment
+        attention_key: target_conditioned_attention
+        loss_key: focal_multitask_soft
+        sample_unit: annotation
+
+      - name: phobert_large_gated_fusion_weighted
+        purpose: Stable attention ablation; fuses CLS with learned attention pooling and keeps strong pretrained CLS signal.
+        encoder_key: phobert_large
+        label_structure_key: multitask_aspect_sentiment
+        attention_key: cls_attention_gated_fusion
         loss_key: multitask_weighted_ce
         sample_unit: annotation
 
@@ -29,6 +107,7 @@ optional_later_runs:
     reason: Original weighted focal gamma=2 run; keep only as a negative ablation if needed.
 
 recommended_first_runs:
+  - phobert_large_target_attn_joint_consistency_best
   - phobert_large_target_attn_joint_aux_ce_best
   - phobert_large_target_attn_weighted
   - phobert_large_target_attn_joint_aux

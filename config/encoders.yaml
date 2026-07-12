@@ -13,7 +13,7 @@ encoders:
   phobert_large:
     provider: huggingface
     model_name: vinai/phobert-large
-    tokenizer_name: vinai/phobert-large
+    tokenizer_name: vinai/phobert-base
     tokenizer_type: auto
     requires_word_segmentation: true
     hidden_size: auto
