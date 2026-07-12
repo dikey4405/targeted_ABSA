@@ -12,12 +12,12 @@ experiment_groups:
   high_score_experiments:
     description: Small set of high-potential targeted ABSA experiments prioritized for best macro F1.
     runs:
-      - name: phobert_large_target_attn_joint_consistency_best
-        purpose: New highest-F1 candidate; directly regularizes agreement between aspect, sentiment, and full-label predictions to improve joint Macro-F1.
+      - name: phobert_large_target_attn_weighted
+        purpose: Best first candidate; combines PhoBERT-large, target-aware attention, and weighted loss.
         encoder_key: phobert_large
-        label_structure_key: multitask_with_joint_aux
+        label_structure_key: multitask_aspect_sentiment
         attention_key: target_conditioned_attention
-        loss_key: joint_consistency_loss
+        loss_key: multitask_weighted_ce
         sample_unit: annotation
 
 optional_later_runs:
