@@ -313,7 +313,7 @@ class ABSATrainer:
                 best_f1 = metrics['macro_f1']
                 torch.save(self.model.state_dict(), os.path.join(self.save_dir, "best_model.pt"))
         
-        print(f"Hoàn thành! Best F1: {best_f1:.4f}. Đã lưu tại: {self.save_dir}/best_model.pt\n")
+        print(f"Hoàn thành! Best F1: {best_f1:.4f}. Đã lưu tại: {self.save_dir}/hotel_best_model.pt\n")
 
 
 # ==========================================
