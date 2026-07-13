@@ -10,7 +10,7 @@ paths:
   dev_file: ABSA_targeted/Data/restaurant_dev.jsonl
   test_file: ABSA_targeted/Data/restaurant_test.jsonl
   output_dir: ABSA_targeted/outputs
-  checkpoint_dir: ABSA_targeted/outputs/mobile_checkpoints
+  checkpoint_dir: ABSA_targeted/outputs/restaurant_checkpoints
   log_dir: ABSA_targeted/outputs/logs
 
 data:
